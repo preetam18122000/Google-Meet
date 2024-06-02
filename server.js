@@ -6,7 +6,7 @@ const PORT = process.env.PORT;
 const server = require('http').Server(app);
 const { v4: uuidv4 } = require('uuid');
 const io = require('socket.io')(server);
-const { ExpressPeerServer } = require('peer');
+const { ExpressPeerServer } = require('peer'); //you will have to run two servers - one for the port, other for peerjs
 const url = require('url');
 const peerServer = ExpressPeerServer(server, {
     debug: true //for development purpose
@@ -27,7 +27,7 @@ app.get('/join', (req,res) => { //if a person is coming to /join, then we should
             pathname: `/join/${uuidv4()}`,
             query: req.query
         })
-    )
+    );
 });
 
 app.get('/joinold:meeting_id', (req,res) => { //to enter a meeting when you already have a meeting link
@@ -36,12 +36,12 @@ app.get('/joinold:meeting_id', (req,res) => { //to enter a meeting when you alre
             pathname: req.params.meeting_id,
             query: req.query
         })
-    )
+    );
 });
 
 app.get("/join/:rooms", (req, res) => { //for joining a room
-    res.render("room", { roomid: req.params.rooms, Myname: req.query.name }); //render the ejs file
-})
+    res.render("room", { roomid: req.params.rooms, Myname: req.query.name }); //render the ejs file - my video block with my name will be shown
+});
 
 io.on("connection", (socket) => {
     socket.on("join-room", (roomid, id, myName) => {
@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
         socket.on("disconnect", () => {
             socket.to(roomid).broadcast.emit("user-disconnected", id);
         });
-    })
-})
+    });
+});
 
 server.listen(PORT);
