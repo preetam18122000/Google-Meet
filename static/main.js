@@ -27,7 +27,7 @@ const peers = {}; //for all the people who joins my meet link
 
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia; //1,2 ->google and other v8engine, 3 -> mozilla
 
-getUserMedia({
+navigator.mediaDevices.getUserMedia({
     video: true, // that we will need both video and audio
     audio: true
 }).then((stream) => {
@@ -46,13 +46,18 @@ getUserMedia({
 });
 
 peer.on("call", (call) => { //when we get a call from another person
-    getUserMedia({  video: true, audio: true }, (stream) => { //this stream will by my stream
-        call.answer(stream); //acknowledge the call and pass our stream to another person
-        const video = document.createElement("video"); //for me to see another persons video
-        call.on("stream", (remoteStream) => {
-            addVideoStream (video, remoteStream, "Test"); //third argument will be the name of the person who joined
-        });
-    });
+    getUserMedia({  video: true, audio: true },
+        function (stream) { //this stream will by my stream
+            call.answer(stream); //acknowledge the call and pass our stream to another person
+            const video = document.createElement("video"); //for me to see another persons video
+            call.on("stream", (remoteStream) => {
+                addVideoStream (video, remoteStream, OtherUsername); //third argument will be the name of the person who joined
+            });
+        },
+        function(err) {
+            console.log("Failed to get local stream", err);
+        }
+    );
 });
 
 peer.on("open", (id) => {
@@ -61,6 +66,7 @@ peer.on("open", (id) => {
 
 socket.on("AddName", (username) => {
     OtherUsername = username;
+    console.log('OtherUsername', OtherUsername);
 });
 
 const RemoveUnusedDivs = () => {
@@ -86,6 +92,19 @@ const connectToNewUser = (userId, streams, myname) => {
     })
 
     peers[userId] = call;
+}
+
+const cancel = () => {
+    $("#getCodeModal").modal("hide");
+}
+
+const copy = async() => {
+    const roomId = document.getElementById("roomId").innerText;
+    await navigator.clipboard.writeText("http://localhost:3030/join/" + roomId);
+}
+
+const invitebox = () => {
+    $("#getCodeModal").modal("show");
 }
 
 const addVideoStream = (videoEl, stream, name) => {
@@ -133,10 +152,10 @@ const videoMuteUnmute = () => {
     const enabled = myVideoStream.getVideoTracks()[0].enabled;
     if(enabled){
         myVideoStream.getVideoTracks()[0].enabled = false;
-        document.getElementById("mic").style.color = "red";
+        document.getElementById("video").style.color = "red";
     } else {
         myVideoStream.getVideoTracks()[0].enabled = true;
-        document.getElementById("mic").style.color = "white";
+        document.getElementById("video").style.color = "white";
     }
 
 }

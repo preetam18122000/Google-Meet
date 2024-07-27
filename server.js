@@ -30,7 +30,7 @@ app.get('/join', (req,res) => { //if a person is coming to /join, then we should
     );
 });
 
-app.get('/joinold:meeting_id', (req,res) => { //to enter a meeting when you already have a meeting link
+app.get('/joinold', (req,res) => { //to enter a meeting when you already have a meeting link
     res.redirect(
         url.format({
             pathname: req.params.meeting_id,
@@ -58,4 +58,6 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(PORT);
+app.listen(PORT, () => {
+    console.log('Server is running on http://localhost:3030');
+  });
