@@ -1,6 +1,6 @@
 const socket = io("/");
 const main_chat_window = document.getElementById('main_chat_window');
-const videoGrids = document.getElementById("vide-grids");
+const videoGrids = document.getElementById("video-grids");
 const myVideo = document.getElementById("video");
 const chat = document.getElementById("chat");
 
@@ -23,6 +23,7 @@ var peer = new Peer(undefined, { //undefined as there is no server path here
 
 let myVideoStream;
 const peers = {}; //for all the people who joins my meet link
+//format -> peers[userId] = callObject (provided by peer)
 
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia; //1,2 ->google and other v8engine, 3 -> mozilla
 
@@ -45,11 +46,11 @@ getUserMedia({
 });
 
 peer.on("call", (call) => { //when we get a call from another person
-    getUserMedia({  video: true, audio: true }, (stream) => {
+    getUserMedia({  video: true, audio: true }, (stream) => { //this stream will by my stream
         call.answer(stream); //acknowledge the call and pass our stream to another person
         const video = document.createElement("video"); //for me to see another persons video
         call.on("stream", (remoteStream) => {
-            addVideoStream (video, remoteStream, ""); //third argument will be the name of the person who joined
+            addVideoStream (video, remoteStream, "Test"); //third argument will be the name of the person who joined
         });
     });
 });
@@ -61,3 +62,58 @@ peer.on("open", (id) => {
 socket.on("AddName", (username) => {
     OtherUsername = username;
 });
+
+const RemoveUnusedDivs = () => {
+    const allDivs = videoGrids.getElementsByTagName("div");
+    for(const div of allDivs){
+        //we have removed video tag on line 83
+        //now we will remove all divs which hsve tag of video, but don't have a video tag inside it
+        e = div.getElementsByTagName("video").length;
+        if(e === 0) div.remove();
+    }
+}
+
+const connectToNewUser = (userId, streams, myname) => {
+    const call = peer.call(userId, streams);
+    const video = document.createElement("video"); //creating new video element
+    call.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream, myname);
+    })
+
+    call.on("close", () => {
+        video.remove(); //remove video tag from UI
+        RemoveUnusedDivs(); //remove unused divs where video tag is deleted (like above)
+    })
+
+    peers[userId] = call;
+}
+
+const addVideoStream = (videoEl, stream, name) => {
+    videoEl.srcObject = stream;
+    videoEl.addEventListener("loadedmetadata", () => {
+        //it means the video tag is ready to play the video
+        videoEl.play();
+    })
+    //to show the name
+    const h1 = document.createElement("h1");
+    const h1name = document.createTextNode(name);
+    h1.appendChild(h1name);
+
+    const videoGrid = document.createElement("div");
+    videoGrid.classList.add("video-grid");
+
+    videoGrid.appendChild(h1);
+    videoGrids.appendChild(videoGrid);
+
+    videoGrid.append(videoEl);
+    RemoveUnusedDivs();
+
+    //if multiple users have joined, we should divide the UI between them
+    let totalUsers = document.getElementsByTagName("video").length;
+    if(totalUsers > 1){
+        for(let i = 0; i<totalUsers; i++){
+            document.getElementsByTagName("video")[i].style.width = 100 / totalUsers + "%"
+        }
+    }
+}
+
