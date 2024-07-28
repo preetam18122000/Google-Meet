@@ -1,60 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
 body {
-    background:black;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
+    height: 100%;
+    font-family: "Roboto", sans-serif;
 }
 
-.Name-Page {
-    width: 400px;
-    padding: 10% 0 0 0;
-    margin: auto;
+#video-grids {
+    display: flex
 }
 
-.form {
+a,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
+.video-grid {
     position: relative;
-    z-index: 1;
-    background-color: white;
-    max-width: 200px;
-    margin: 0 auto 100px;
-    padding: 25px;
-    text-align: center
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
+    overflow-y: auto;
 }
 
-.form input {
-    font-family: "Roboto", "sans-serif";
-    outline: 1;
-    background: rgb(226, 218, 218);
-    width: 100%;
-    border: 0;
-    margin: 0 0 15px;
-    padding: 20px;
-    box-sizing: border-box;
-    font-size: 14px
+h1 {
+    position: absolute;
+    bottom: 0;
+    left: 40%;
 }
 
-.form button {
-    font-family: "Roboto", "sans-serif";
-    outline: 0;
-    background: #4CAF50;
-    width: 100%;
-    border: 0;
+video {
+    display: block;
+    flex: 1;
+    object-fit: cover;
+    border: 5px solid #000;
+    max-width: 600px;
+    border-radius: 25px;
+}
+
+.mainclone {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.main_left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main_right {
+    display: flex;
+    flex: 0.2;
+    flex-direction: column;
+    background-color: #242324;
+}
+
+.main_controls_block {
+    flex-direction: row;
+    display: flex;
+}
+
+.main_controls {
+    display: flex;
+    flex-direction: row;
+    background-color: #1C1E20;
+    color: white;
     padding: 10px;
-    color: #ffffff;
-    font-size: 10px;
+    justify-content: space-between
+}
+
+.main_controls_button {
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 3px 10px;
+    min-width: 80px;
+    align-items: center;
+    justify-content: center;
 }
 
-.form p {
-    font-family: "Roboto", "sans-serif";
-    font-size: 60%;
-    margin: 15px
+.main_videos {
+    flex-grow: 1;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
 }
 
-.form button:hover {
-    background: #43A047
+.leave_red {
+    
+    background-color: red;
+    border-radius: 5%;
+}
+.leave_meeting >a{
+    text-decoration: none;
+    color:#ffffff;
+}
+.main_controls_button:hover {
+    background-color: #686666;
+    color:#ffffff;
+    border-radius: 25px;
 }
 
-.form .unknown-form {
-    display: none
+
+
+@keyframes animate {
+    0% {
+        background-position: 0% 100%;
+    }
+    50% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 100%;
+    }
 }
